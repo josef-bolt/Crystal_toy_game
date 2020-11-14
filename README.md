@@ -1,6 +1,6 @@
 # tile_engine
 
-TODO: Write a description here
+A toy 2D tile engine and game in Crystal.
 
 ## Installation
 
