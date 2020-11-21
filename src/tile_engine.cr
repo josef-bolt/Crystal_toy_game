@@ -2,6 +2,7 @@ require "../lib/sdl/src/sdl"
 require "./input_handler.cr"
 require "./game_state.cr"
 require "./entity.cr"
+require "./entity_renderer"
 require "./color.cr"
 
 module TileEngine
@@ -22,11 +23,13 @@ module TileEngine
   renderer.clear
   renderer.present
 
-  gameState = GameState.new(map_width: MAP_TILES_IN_ROW, map_height: MAP_TILES_IN_COLUMN)
-  player = Entity.new(color: Color.white)
-  entities = [player]
-  gameState.map[10][10] << player
-
+  player = Player.new(color: Color.white)
+  gameState = GameState.new(
+    map_width: MAP_TILES_IN_ROW,
+    map_height: MAP_TILES_IN_COLUMN,
+    player: player,
+    player_location: {10, 10}
+  )
 
   loop do
     input_event = SDL::Event.wait
@@ -34,6 +37,8 @@ module TileEngine
     event = InputHandler.handle_input(input_event)
     gameState.update(event)
     break if !gameState.running
-    # render
+    EntityRendering.render(gameState.player_location, TILE_WIDTH, TILE_HEIGHT, player, renderer)
+    renderer.present
+    renderer.clear
   end
 end
