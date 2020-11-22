@@ -1,9 +1,9 @@
 require "./color.cr"
 
 class Entity
-  getter :color
+  getter :sprite_location
 
-  def initialize(color : SDL::Color = Color.black)
-    @color = color
+  def initialize(sprite_location : SDL::Rect)
+    @sprite_location = sprite_location
   end
 end

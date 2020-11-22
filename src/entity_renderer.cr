@@ -1,10 +1,8 @@
 module EntityRendering
-# TODO: Make this not gross
-  def EntityRendering.render(location, w, h, entity, renderer)
-    rect = SDL::Rect[w*location[0], h*location[1], w, h]
-    draw_color = renderer.draw_color
-    renderer.draw_color = entity.color
-    renderer.fill_rect(rect)
-    renderer.draw_color = draw_color
+  def EntityRendering.render(location, w, h, entity, renderer, sprite)
+    renderer.draw_color = SDL::Color[0, 0, 0, 0]
+    renderer.clear
+    renderer.copy(sprite, entity.sprite_location, SDL::Rect[location[0]*w, location[1]*h, 16, 16])
+    renderer.present
   end
 end
