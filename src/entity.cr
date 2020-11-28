@@ -1,15 +1,21 @@
 require "./color.cr"
 
 abstract class Entity
-  getter :move_request
+  getter :move_request, :blocking
   property :location
-  def initialize(sprite : SDL::Texture,  sprite_rect_location : Tuple(Int32, Int32, Int32, Int32), location : Tuple(Int32, Int32))
+  def initialize(
+    sprite : SDL::Texture,
+    sprite_rect_location : Tuple(Int32, Int32, Int32, Int32),
+    location : Tuple(Int32, Int32),
+    blocking : Bool = false
+  )
     @sprite = sprite
     @sprite_location = SDL::Rect.new *sprite_rect_location
     @location = location
     @width = 16
     @height = 16
     @move_request = {0, 0}
+    @blocking = blocking
   end
 
   def render(renderer)

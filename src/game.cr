@@ -11,8 +11,8 @@ class Game
   TILE_HEIGHT = 16
   MAP_TILES_IN_ROW = WINDOW_WIDTH // TILE_WIDTH
   MAP_TILES_IN_COLUMN = WINDOW_HEIGHT // TILE_HEIGHT
-  SPRITE_FILEPATH = "./resources/sprites/sprites.png"
   TITLE = "Game!"
+  IMG = SDL::IMG.load(File.join("resources", "sprites", "sprites.png"))
 
   def initialize
     SDL.init(SDL::Init::VIDEO)

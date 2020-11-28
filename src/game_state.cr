@@ -5,14 +5,16 @@ require "./input_handler.cr"
 class GameState
   @map : Array(Array(Array(Entity)))
   @player : Player
-  getter :map, :running
+  getter :map, :running, :game
 
   def initialize(
+    game : Game,
     running : Bool = true,
     map_width : Int = 0,
     map_height : Int = 0,
-    player : Player = Player.new,
+    player : Player = Player.new
   )
+    @game = game
     @running = running
     @map = Array.new(map_width) { Array.new(map_height) { [] of Entity } }
     @player = player
@@ -23,7 +25,7 @@ class GameState
   def update(input_event)
     case input_event
     when QuitEvent then @running = false
-    when MoveEvent then @player.process_move_input(input_event) && puts @player.move_request
+    when MoveEvent then @player.process_move_input(input_event)
     end
     update_entities_requests
     handle_entity_requests
@@ -34,6 +36,13 @@ class GameState
     renderer.clear
     @entity_list.each { |e| e.render(renderer) }
     renderer.present
+  end
+
+  def add_entities(entities)
+    entities.each do |e|
+      @entity_list << e
+      place_entity(e)
+    end
   end
 
   private def fetch_map_location(location)
@@ -55,7 +64,7 @@ class GameState
   end
 
   private def can_move?(entity)
-    request_in_bounds?(entity)
+    request_in_bounds?(entity) && !blocked?(entity)
   end
 
   private def move_entity(entity)
@@ -77,8 +86,12 @@ class GameState
   end
 
   private def init_entity_locations
-    puts @entity_list
     @entity_list.each { |e| @map[e.location[0]][e.location[1]] << e }
+  end
+
+  private def blocked?(entity)
+    location = new_location(entity.location, entity.move_request)
+    return fetch_map_location(location).any? { |e| e.blocking }
   end
 
   private def request_in_bounds?(entity)
