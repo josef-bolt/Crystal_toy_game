@@ -5,56 +5,85 @@ require "./input_handler.cr"
 class GameState
   @map : Array(Array(Array(Entity)))
   @player : Player
-  getter :map, :running, :player_location
+  getter :map, :running
 
   def initialize(
     running : Bool = true,
     map_width : Int = 0,
     map_height : Int = 0,
     player : Player = Player.new,
-    player_location = {0, 0}
   )
     @running = running
     @map = Array.new(map_width) { Array.new(map_height) { [] of Entity } }
     @player = player
-    @player_location = player_location
-    fetch_map_location(@map, @player_location) << @player
+    @entity_list = [player] of Entity
+    init_entity_locations
   end
 
   def update(input_event)
     case input_event
     when QuitEvent then @running = false
-    when MoveEvent then handle_move_request(@player.move_request(input_event))
+    when MoveEvent then @player.process_move_input(input_event) && puts @player.move_request
+    end
+    update_entities_requests
+    handle_entity_requests
+  end
+
+  def render(renderer)
+    renderer.draw_color = SDL::Color[0, 0, 0, 0]
+    renderer.clear
+    @entity_list.each { |e| e.render(renderer) }
+    renderer.present
+  end
+
+  private def fetch_map_location(location)
+    return @map[location[0]][location[1]]
+  end
+
+  private def update_entities_requests
+    @entity_list.each { |e| e.update_requests }
+  end
+
+  private def handle_entity_requests
+    @entity_list.each do |e|
+      handle_move_request(e)
     end
   end
 
-  private def fetch_map_location(map, location)
-    return map[location[0]][location[1]]
+  private def handle_move_request(entity)
+    move_entity(entity) if can_move?(entity)
   end
 
-  private def handle_move_request(request)
-    new_location = translate_position(@player_location, request)
-
-    if in_bounds?(new_location)
-      remove_player_from_current_location
-      place_player(new_location)
-    end
+  private def can_move?(entity)
+    request_in_bounds?(entity)
   end
 
-  private def translate_position(location_pos, location_change)
-    {location_pos[0] + location_change[0], location_pos[1] + location_change[1]}
+  private def move_entity(entity)
+    remove_entity(entity)
+    entity.move(new_location(entity.location, entity.move_request))
+    place_entity(entity)
   end
 
-  private def remove_player_from_current_location
-    @map[@player_location[0]][@player_location[1]].delete(@player)
+  private def remove_entity(entity)
+    fetch_map_location(entity.location).delete(entity)
   end
 
-  private def place_player(location)
-    fetch_map_location(@map, location) << @player
-    @player_location = location
+  private def place_entity(entity)
+    fetch_map_location(entity.location) << entity
   end
 
-  private def in_bounds?(location)
+  private def new_location(current_location, location_change)
+    {current_location[0] + location_change[0], current_location[1] + location_change[1]}
+  end
+
+  private def init_entity_locations
+    puts @entity_list
+    @entity_list.each { |e| @map[e.location[0]][e.location[1]] << e }
+  end
+
+  private def request_in_bounds?(entity)
+    location = new_location(entity.location, entity.move_request)
+
     (location[0] >= 0) &&
       (location[0] < @map.size) &&
       (location[1] >= 0) &&

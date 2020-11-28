@@ -3,7 +3,6 @@ require "../lib/sdl/src/image"
 require "./input_handler.cr"
 require "./game_state.cr"
 require "./entity.cr"
-require "./entity_renderer.cr"
 require "./game.cr"
 require "./sprite_locations.cr"
 
@@ -12,18 +11,19 @@ module TileEngine
 
   game = Game.new
 
-  player = Player.new(sprite_location: SpriteLocations::PLAYER_SPRITE)
+  img = SDL::IMG.load(File.join("resources", "sprites", "sprites.png"))
+  sprite = SDL::Texture.from(img, game.renderer)
+  player = Player.new(sprite: sprite, sprite_rect_location: SpriteLocations::PLAYER_SPRITE, location: {10, 10})
   gameState = GameState.new(
     map_width: game.map_width,
     map_height: game.map_height,
     player: player,
-    player_location: {10, 10}
   )
 
   loop do
     event = InputHandler.handle_input(SDL::Event.wait)
     gameState.update(event)
     break if !gameState.running
-    EntityRendering.render(gameState.player_location, game.tile_width, game.tile_height, player, game.renderer, game.sprite_texture)
+    gameState.render(game.renderer)
   end
 end
