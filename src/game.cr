@@ -5,12 +5,13 @@ class Game
   @tile_width : Int32
   @tile_height : Int32
 
-  WINDOW_WIDTH = 640
-  WINDOW_HEIGHT = 480
+  WINDOW_WIDTH = 1280
+  WINDOW_HEIGHT = 960
   TILE_WIDTH = 16
   TILE_HEIGHT = 16
-  MAP_TILES_IN_ROW = WINDOW_WIDTH // TILE_WIDTH
-  MAP_TILES_IN_COLUMN = WINDOW_HEIGHT // TILE_HEIGHT
+  LEFT_PANEL_TILE_WIDTH = 16
+  MAP_TILES_IN_ROW = 64
+  MAP_TILES_IN_COLUMN = 60
   TITLE = "Game!"
   IMG = SDL::IMG.load(File.join("resources", "sprites", "sprites.png"))
 
@@ -23,8 +24,7 @@ class Game
 
     @window = SDL::Window.new(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
     @renderer = SDL::Renderer.new(@window)
-    image = SDL::IMG.load(File.join("./resources", "sprites", "sprites.png"))
-    @sprite_texture = SDL::Texture.from(image, @renderer)
+    @sprite_texture = SDL::Texture.from(IMG, @renderer)
     @map_width = MAP_TILES_IN_ROW
     @map_height = MAP_TILES_IN_COLUMN
     @tile_width = TILE_WIDTH

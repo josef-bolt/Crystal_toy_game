@@ -31,10 +31,12 @@ class GameState
     handle_entity_requests
   end
 
-  def render(renderer)
+  def render
+    renderer = @game.renderer
     renderer.draw_color = SDL::Color[0, 0, 0, 0]
     renderer.clear
-    @entity_list.each { |e| e.render(renderer) }
+    render_interface
+    render_entities
     renderer.present
   end
 
@@ -43,6 +45,26 @@ class GameState
       @entity_list << e
       place_entity(e)
     end
+  end
+
+  private def render_interface
+    renderer = @game.renderer
+    (0..Game::MAP_TILES_IN_COLUMN).each do |t|
+      renderer.copy(
+        @game.sprite_texture,
+        SDL::Rect.new(*SpriteLocations::PANEL_SEPARATOR),
+        SDL::Rect[
+        Game::TILE_HEIGHT*Game::LEFT_PANEL_TILE_WIDTH - Game::TILE_WIDTH,
+        Game::TILE_WIDTH*t,
+        Game::TILE_WIDTH // 2,
+        Game::TILE_HEIGHT
+      ]
+      )
+    end
+  end
+
+  private def render_entities
+    @entity_list.each { |e| e.render(@game.renderer) }
   end
 
   private def fetch_map_location(location)

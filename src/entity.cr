@@ -19,7 +19,16 @@ abstract class Entity
   end
 
   def render(renderer)
-    renderer.copy(@sprite, @sprite_location, SDL::Rect[@location[0]*@width, @location[1]*@height, @width, @height] )
+    renderer.copy(@sprite, @sprite_location, SDL::Rect.new *location_in_window)
+  end
+
+  private def location_in_window
+    {
+      Game::TILE_WIDTH*@location[0] + Game::TILE_WIDTH*Game::LEFT_PANEL_TILE_WIDTH,
+      Game::TILE_HEIGHT*@location[1],
+      Game::TILE_WIDTH,
+      Game::TILE_HEIGHT
+    }
   end
 
   abstract def update_requests
