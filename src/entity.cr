@@ -18,8 +18,8 @@ abstract class Entity
     @blocking = blocking
   end
 
-  def render(renderer)
-    renderer.copy(@sprite, @sprite_location, SDL::Rect.new *location_in_window)
+  def render(renderer, screen_pos)
+    renderer.copy(@sprite, @sprite_location, SDL::Rect.new *screen_pos)
   end
 
   private def location_in_window

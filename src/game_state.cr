@@ -5,18 +5,16 @@ require "./input_handler.cr"
 class GameState
   @map : Array(Array(Array(Entity)))
   @player : Player
-  getter :map, :running, :game
+  getter :map, :running, :game, :player, :entity_list
 
   def initialize(
     game : Game,
     running : Bool = true,
-    map_width : Int = 0,
-    map_height : Int = 0,
     player : Player = Player.new
   )
     @game = game
     @running = running
-    @map = Array.new(map_width) { Array.new(map_height) { [] of Entity } }
+    @map = Array.new(Game::MAP_TILES_IN_ROW) { Array.new(Game::MAP_TILES_IN_COLUMN) { [] of Entity } }
     @player = player
     @entity_list = [player] of Entity
     init_entity_locations
@@ -31,40 +29,11 @@ class GameState
     handle_entity_requests
   end
 
-  def render
-    renderer = @game.renderer
-    renderer.draw_color = SDL::Color[0, 0, 0, 0]
-    renderer.clear
-    render_interface
-    render_entities
-    renderer.present
-  end
-
   def add_entities(entities)
     entities.each do |e|
       @entity_list << e
       place_entity(e)
     end
-  end
-
-  private def render_interface
-    renderer = @game.renderer
-    (0..Game::MAP_TILES_IN_COLUMN).each do |t|
-      renderer.copy(
-        @game.sprite_texture,
-        SDL::Rect.new(*SpriteLocations::PANEL_SEPARATOR),
-        SDL::Rect[
-        Game::TILE_HEIGHT*Game::LEFT_PANEL_TILE_WIDTH - Game::TILE_WIDTH,
-        Game::TILE_WIDTH*t,
-        Game::TILE_WIDTH // 2,
-        Game::TILE_HEIGHT
-      ]
-      )
-    end
-  end
-
-  private def render_entities
-    @entity_list.each { |e| e.render(@game.renderer) }
   end
 
   private def fetch_map_location(location)

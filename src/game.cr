@@ -9,9 +9,12 @@ class Game
   WINDOW_HEIGHT = 960
   TILE_WIDTH = 16
   TILE_HEIGHT = 16
+  WINDOW_TILE_WIDTH = WINDOW_WIDTH // TILE_WIDTH
+  WINDOW_TILE_HEIGHT = WINDOW_HEIGHT // TILE_HEIGHT
   LEFT_PANEL_TILE_WIDTH = 16
   MAP_TILES_IN_ROW = 64
   MAP_TILES_IN_COLUMN = 60
+
   TITLE = "Game!"
   IMG = SDL::IMG.load(File.join("resources", "sprites", "sprites.png"))
 
