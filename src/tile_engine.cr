@@ -7,6 +7,7 @@ require "./game.cr"
 require "./sprite_locations.cr"
 require "./room_builder.cr"
 require "./game_state_view.cr"
+require "./map_generators/map_generator_helpers.cr"
 
 module TileEngine
   VERSION = "0.1.0"
@@ -17,6 +18,19 @@ module TileEngine
   game_state = GameState.new(game: game, player: player)
   game_state_view = GameStateView.new(game: game, game_state: game_state)
   # RoomBuilder.make_room(gameState, 10, 10, 5, 5)
+  map_schema = MapGeneratorHelpers.generate(
+    MapGeneratorStrategy::VoronoiOverworld,
+    Game::MAP_TILES_IN_ROW,
+    Game::MAP_TILES_IN_COLUMN
+  )
+
+  map_entities = [] of Entity
+  (0...Game::MAP_TILES_IN_ROW).each do |x|
+    (0...Game::MAP_TILES_IN_COLUMN).each do |y|
+      map_entities << EntityFactory.make_wall(game, {x, y}) if map_schema[x][y] == 1
+    end
+  end
+  game_state.add_entities(map_entities)
 
   loop do
     event = InputHandler.handle_input(SDL::Event.wait)

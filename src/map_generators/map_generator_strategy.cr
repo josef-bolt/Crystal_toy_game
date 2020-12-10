@@ -1,0 +1,3 @@
+enum MapGeneratorStrategy
+  VoronoiOverworld
+end
