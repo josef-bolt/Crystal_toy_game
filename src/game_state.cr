@@ -1,6 +1,7 @@
 require "./entity.cr"
 require "./player.cr"
 require "./input_handler.cr"
+require "./map_initialization.cr"
 
 class GameState
   @map : Array(Array(Array(Entity)))
@@ -14,9 +15,10 @@ class GameState
   )
     @game = game
     @running = running
-    @map = Array.new(Game::MAP_TILES_IN_ROW) { Array.new(Game::MAP_TILES_IN_COLUMN) { [] of Entity } }
     @player = player
     @entity_list = [player] of Entity
+    @map = init_map
+    MapInitialization.init_overworld_terrain(self)
     init_entity_locations
   end
 
@@ -34,6 +36,10 @@ class GameState
       @entity_list << e
       place_entity(e)
     end
+  end
+
+  private def init_map
+    map = Array.new(Game::MAP_TILES_IN_ROW) { Array.new(Game::MAP_TILES_IN_COLUMN) { [] of Entity } }
   end
 
   private def fetch_map_location(location)

@@ -55,9 +55,9 @@ class GameStateView
     y_min = Math.max(0, focal_location[1] - (Game::WINDOW_TILE_HEIGHT // 2))
     {
       x_min: x_min,
-      x_max: Math.min(@game_state.map.size, focal_location[0] + (Game::WINDOW_TILE_WIDTH - x_min)),
+      x_max: Math.min(@game_state.map.size, x_min + Game::WINDOW_TILE_WIDTH),
       y_min: y_min,
-      y_max: Math.min(@game_state.map.first.size, focal_location[1] + (Game::WINDOW_TILE_WIDTH - y_min))
+      y_max: Math.min(@game_state.map.first.size, y_min + Game::WINDOW_TILE_HEIGHT)
     }
   end
 

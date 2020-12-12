@@ -8,7 +8,7 @@ class VoronoiOverworldGenerator
     @width = width
     @height = height
     @map = Array.new(width) { Array.new(height) { 0 } }
-    @centre_states = [1, 2]
+    @centre_states = [1, 2, 2]
     @centre_points = [] of Tuple(Int32, Int32)
     init_centre_points
   end
@@ -52,6 +52,6 @@ class VoronoiOverworldGenerator
   end
 
   private def distance(x, y, pos)
-    (x - pos[0]).abs + (y - pos[1]).abs
+    Math.sqrt((x - pos[0])**2 + (y - pos[1])**2)
   end
 end
